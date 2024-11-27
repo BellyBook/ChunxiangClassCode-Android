@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,18 +31,22 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+enum class MessageType {
+    text, trans, time
+    ;
+}
+
 // 类就是一个模版，描述了某类事物应用具有的特征(属性)和行为(方法)。
 data class Message(
     val text: String,
-    val isMine: Boolean,
-    val isTrans: Boolean = false,
-    var amount: String = "",
-    var isTime: Boolean = false,
-    var time: String = "",
+    val isMine: Boolean = false,
+    val amount: String = "",
+    val type: MessageType = MessageType.text,
 )
 
 @Composable
@@ -60,21 +65,37 @@ fun WechatDemo() {
     // 1. 当需要一个数据容器时，使用 data class
     // 2. 当需要处理业务逻辑时，使用普通的 class
 
+    // 什么是枚举？
+    // 枚举是一种特殊的类，它用于表示一组固定的常量值。
+    // 是一种数据类型
+    // 用来表示 “有限且固定” 的选集合
 
     var messages by remember {
         mutableStateOf(
             listOf(
                 Message(
+                    type = MessageType.text,
                     text = "咱们现在周末还有坐而论道么\n之前的有录屏没能看回放么？",
                     isMine = false
                 ),
-                Message(text = "有的", isMine = true),
-                Message(text = "好的，299是吧，直接转给你么", isMine = false),
-                Message(text = "是的", isMine = true),
-                Message(text = "已被接收", isMine = false, isTrans = true, amount = "399"),
-                Message(text = "已收款", isMine = true, isTrans = true, amount = "399"),
-                Message(text = "怎么看回放？", isMine = false),
-                Message(text = "入帐后发你", isMine = true),
+                Message(type = MessageType.time, text = "2月15日 10:15"),
+                Message(type = MessageType.text, text = "有的", isMine = true),
+                Message(
+                    type = MessageType.text,
+                    text = "好的，299是吧，直接转给你么",
+                    isMine = false
+                ),
+                Message(type = MessageType.text, text = "是的", isMine = true),
+                Message(
+                    type = MessageType.trans,
+                    text = "已被接收",
+                    isMine = false,
+                    amount = "399"
+                ),
+                Message(type = MessageType.trans, text = "已收款", isMine = true, amount = "399"),
+                Message(type = MessageType.text, text = "怎么看回放？", isMine = false),
+                Message(type = MessageType.time, text = "2月15日10:20"),
+                Message(type = MessageType.text, text = "入帐后发你", isMine = true),
             )
         )
     }
@@ -95,36 +116,51 @@ fun WechatDemo() {
                 .padding(12.dp)
         ) {
             messages.forEach { message ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (message.isMine) {
-                        Spacer(Modifier.weight(1f))
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(Color.Gray)
-                                .size(40.dp)
-                        )
-                    }
-                    // 内容
-                    if (message.isTrans) {
-                        TransMessageContent(message = message)
-                    } else {
-                        TextMessageContent(message = message)
-                    }
-                    if (!message.isMine) {
-                        Spacer(Modifier.weight(1f))
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(Color.Gray)
-                                .size(40.dp)
-                        )
+                when (message.type) {
+                    MessageType.time -> Text(
+                        text = message.text,
+                        color = Color.Gray.copy(0.5f),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentSize()
+                    )
+                    else -> {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            if (message.isMine) {
+                                Spacer(Modifier.weight(1f))
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color.Gray)
+                                        .size(40.dp)
+                                )
+                            }
+                            // 内容
+                            when (message.type) {
+                                MessageType.text -> TextMessageContent(message = message)
+                                MessageType.trans -> TransMessageContent(message = message)
+                                MessageType.time -> { }
+                            }
+
+                            if (!message.isMine) {
+                                Spacer(Modifier.weight(1f))
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color.Gray)
+                                        .size(40.dp)
+                                )
+                            }
+                        }
                     }
                 }
+
+
 
             }
 
@@ -172,7 +208,7 @@ fun TransMessageContent(message: Message) {
                         text = message.text,
                         color = Color.White,
                         fontSize = 13.sp,
-                        )
+                    )
                 }
             }
             HorizontalDivider(
@@ -269,7 +305,7 @@ private fun Navbar(
     }
 }
 
-@Preview
+@Preview(heightDp = 1200)
 @Composable
 fun WechatDemoPreview() {
     WechatDemo()
