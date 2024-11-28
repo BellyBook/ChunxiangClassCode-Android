@@ -49,11 +49,13 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // https://github.com/leavesCZY/Matisse/wiki/%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97
+    implementation("io.github.leavesczy:matisse:2.1.2")
+    // 导入网络图片库 https://github.com/coil-kt/coil/blob/main/README-zh.md
+    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
+
 }

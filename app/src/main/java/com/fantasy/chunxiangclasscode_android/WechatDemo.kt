@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +51,7 @@ data class Message(
     val type: MessageType = MessageType.text,
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WechatDemo() {
     // 什么是程序？
@@ -99,8 +102,25 @@ fun WechatDemo() {
             )
         )
     }
+
+    var showSheet by remember { mutableStateOf(false) }
+
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
+        ) {
+            MessageEditView()
+        }
+    }
+
     Scaffold(
-        topBar = { Navbar(onDismiss = {}) },
+        topBar = {
+            Navbar(
+                onDismiss = {},
+                onClickRight = {
+                    showSheet = true
+                })
+        },
         bottomBar = {
             androidx.compose.foundation.Image(
                 painter = painterResource(id = R.drawable.bottom_bar),
@@ -125,6 +145,7 @@ fun WechatDemo() {
                             .fillMaxWidth()
                             .wrapContentSize()
                     )
+
                     else -> {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -143,7 +164,7 @@ fun WechatDemo() {
                             when (message.type) {
                                 MessageType.text -> TextMessageContent(message = message)
                                 MessageType.trans -> TransMessageContent(message = message)
-                                MessageType.time -> { }
+                                MessageType.time -> {}
                             }
 
                             if (!message.isMine) {
@@ -159,7 +180,6 @@ fun WechatDemo() {
                         }
                     }
                 }
-
 
 
             }
@@ -285,6 +305,7 @@ private fun Navbar(
             Icon(
                 painter = painterResource(id = R.drawable.more),
                 contentDescription = null,
+                modifier = Modifier.clickable { onClickRight() }
             )
         }
 
