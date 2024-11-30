@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,8 +22,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,10 +41,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import github.leavesczy.matisse.MediaResource
 
 enum class MessageType {
     text, trans, time
     ;
+
+    val title
+        get() = when (this) {
+            text -> "文本消息"
+            trans -> "转账消息"
+            time -> "时间消息"
+        }
 }
 
 // 类就是一个模版，描述了某类事物应用具有的特征(属性)和行为(方法)。
@@ -73,43 +86,29 @@ fun WechatDemo() {
     // 是一种数据类型
     // 用来表示 “有限且固定” 的选集合
 
-    var messages by remember {
-        mutableStateOf(
-            listOf(
-                Message(
-                    type = MessageType.text,
-                    text = "咱们现在周末还有坐而论道么\n之前的有录屏没能看回放么？",
-                    isMine = false
-                ),
-                Message(type = MessageType.time, text = "2月15日 10:15"),
-                Message(type = MessageType.text, text = "有的", isMine = true),
-                Message(
-                    type = MessageType.text,
-                    text = "好的，299是吧，直接转给你么",
-                    isMine = false
-                ),
-                Message(type = MessageType.text, text = "是的", isMine = true),
-                Message(
-                    type = MessageType.trans,
-                    text = "已被接收",
-                    isMine = false,
-                    amount = "399"
-                ),
-                Message(type = MessageType.trans, text = "已收款", isMine = true, amount = "399"),
-                Message(type = MessageType.text, text = "怎么看回放？", isMine = false),
-                Message(type = MessageType.time, text = "2月15日10:20"),
-                Message(type = MessageType.text, text = "入帐后发你", isMine = true),
-            )
-        )
+    val avatar1 = remember {
+        mutableStateOf<MediaResource?>(null)
+    }
+    val avatar2 = remember {
+        mutableStateOf<MediaResource?>(null)
+    }
+    val messages = remember {
+        mutableStateListOf<Message>()
     }
 
     var showSheet by remember { mutableStateOf(false) }
 
     if (showSheet) {
+        val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
+            sheetState = bottomSheetState
         ) {
-            MessageEditView()
+            MessageEditView(
+                avatar1 = avatar1,
+                avatar2 = avatar2,
+                messages = messages,
+            )
         }
     }
 
@@ -136,55 +135,70 @@ fun WechatDemo() {
                 .padding(12.dp)
         ) {
             messages.forEach { message ->
-                when (message.type) {
-                    MessageType.time -> Text(
-                        text = message.text,
-                        color = Color.Gray.copy(0.5f),
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentSize()
-                    )
-
-                    else -> {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            if (message.isMine) {
-                                Spacer(Modifier.weight(1f))
-                            } else {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(Color.Gray)
-                                        .size(40.dp)
-                                )
-                            }
-                            // 内容
-                            when (message.type) {
-                                MessageType.text -> TextMessageContent(message = message)
-                                MessageType.trans -> TransMessageContent(message = message)
-                                MessageType.time -> {}
-                            }
-
-                            if (!message.isMine) {
-                                Spacer(Modifier.weight(1f))
-                            } else {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(Color.Gray)
-                                        .size(40.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
-
+                MessageCell(
+                    avatar1 = avatar1,
+                    avatar2 = avatar2,
+                    message = message
+                )
             }
 
 
+        }
+    }
+}
+
+@Composable
+fun MessageCell(
+    avatar1: MutableState<MediaResource?>,
+    avatar2: MutableState<MediaResource?>,
+    message: Message
+) {
+    when (message.type) {
+        MessageType.time -> Text(
+            text = message.text,
+            color = Color.Gray.copy(0.5f),
+            fontSize = 12.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentSize()
+        )
+
+        else -> {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (message.isMine) {
+                    Spacer(Modifier.weight(1f))
+                } else {
+                    AsyncImage(
+                        model = avatar2.value?.uri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color.Gray)
+                            .size(40.dp)
+                    )
+                }
+                // 内容
+                when (message.type) {
+                    MessageType.text -> TextMessageContent(message = message)
+                    MessageType.trans -> TransMessageContent(message = message)
+                    MessageType.time -> {}
+                }
+
+                if (!message.isMine) {
+                    Spacer(Modifier.weight(1f))
+                } else {
+                    AsyncImage(
+                        model = avatar1.value?.uri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color.Gray)
+                            .size(40.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -282,8 +296,8 @@ private fun Navbar(
 ) {
     Box(
         modifier = Modifier
-            .padding(vertical = 14.dp)
-            .padding(top = 50.dp)
+            .statusBarsPadding()
+            .height(48.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
