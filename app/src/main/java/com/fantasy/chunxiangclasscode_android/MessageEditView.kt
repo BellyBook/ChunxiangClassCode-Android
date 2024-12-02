@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import github.leavesczy.matisse.GlideImageEngine
 import github.leavesczy.matisse.ImageEngine
@@ -91,11 +92,7 @@ val mockImage: String
     }
 
 @Composable
-fun MessageEditView(
-    avatar1: MutableState<MediaResource?>,
-    avatar2: MutableState<MediaResource?>,
-    messages: SnapshotStateList<Message>,
-) {
+fun MessageEditView(vm: WechatDemoViewModel = viewModel()) {
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -114,164 +111,146 @@ fun MessageEditView(
         // 2. 构建工具
 
         // 我的头像
-        item {
-
-            val mediaPickerLauncher1 =
-                rememberLauncherForActivityResult(contract = MatisseContract()) { result: List<MediaResource>? ->
-                    avatar1.value = result?.firstOrNull()
-                }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable {
-                    mediaPickerLauncher1.launch(matisse)
-                }
-            ) {
-                Text(text = "我的头像")
-                Spacer(Modifier.weight(1f))
-                AsyncImage(
-                    model = avatar1.value?.uri,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(Color.Gray)
-                        .size(40.dp)
-                )
-            }
-        }
+        item { Avatar1() }
 
         // 对方头像
-        item {
-            val mediaPickerLauncher2 =
-                rememberLauncherForActivityResult(contract = MatisseContract()) { result: List<MediaResource>? ->
-                    avatar2.value = result?.firstOrNull()
-                }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable {
-                    mediaPickerLauncher2.launch(matisse)
-                }
-            ) {
-                AsyncImage(
-                    model = avatar2.value?.uri,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(Color.Gray)
-                        .size(40.dp)
-                )
-                Spacer(Modifier.weight(1f))
-                Text(text = "对方头像")
-            }
-        }
+        item { Avatar2() }
 
         // 添加消息
         item {
-            var inputMessage by remember { mutableStateOf(Message(text = "")) }
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = {
-                        if (inputMessage.text.isEmpty()) {
-                            return@Button
-                        }
-
-                        if (inputMessage.type == MessageType.trans) {
-                            val isMine = inputMessage.isMine
-                            messages += inputMessage.copy(
-                                text = "已被接收",
-                                amount = inputMessage.text
-                            )
-                            messages += inputMessage.copy(
-                                text = "已接收",
-                                amount = inputMessage.text,
-                                isMine = !isMine
-                            )
-                        } else {
-                            messages += inputMessage.copy()
-                        }
-                        inputMessage = inputMessage.copy(text = "")
-                    },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text(text = "添加一条消息")
-                }
-
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    listOf(true, false).forEach { mine ->
-                        SegmentedButton(
-                            shape = RectangleShape,
-                            selected = inputMessage.isMine == mine,
-                            onClick = {
-                                inputMessage = inputMessage.copy(isMine = mine)
-                            }
-                        ) {
-                            Text(text = if (mine) "我的消息" else "对方的消息")
-                        }
-                    }
-                }
-                TextField(
-                    value = inputMessage.text,
-                    onValueChange = { inputMessage = inputMessage.copy(text = it) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    MessageType.entries.forEach { type ->
-                        SegmentedButton(
-                            shape = RectangleShape,
-                            selected = inputMessage.type == type,
-                            onClick = {
-                                inputMessage = inputMessage.copy(type = type)
-                            }
-                        ) {
-                            Text(text = type.title)
-                        }
-                    }
-                }
-
-
-                messages.forEach { message ->
-                    var expanded by remember { mutableStateOf(false) }
-                    Box(
-                        modifier = Modifier.clickable {
-                            expanded = true
-                        }
-                    ) {
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            Text(text = "删除消息", modifier = Modifier.clickable {
-                                messages.remove(message)
-                            })
-                        }
-
-                        MessageCell(
-                            avatar1 = avatar1,
-                            avatar2 = avatar2,
-                            message = message
-                        )
-                    }
-                }
-            }
+            AddMessage()
         }
 
 
     }
 }
 
+@Composable
+private fun AddMessage(vm: WechatDemoViewModel = viewModel()) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Button(
+            onClick = {
+                vm.addMessage()
+            },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text(text = "添加一条消息")
+        }
+
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            listOf(true, false).forEach { mine ->
+                SegmentedButton(
+                    shape = RectangleShape,
+                    selected = vm.inputMessage.isMine == mine,
+                    onClick = {
+                        vm.inputMessage = vm.inputMessage.copy(isMine = mine)
+                    }
+                ) {
+                    Text(text = if (mine) "我的消息" else "对方的消息")
+                }
+            }
+        }
+        TextField(
+            value = vm.inputMessage.text,
+            onValueChange = { vm.inputMessage = vm.inputMessage.copy(text = it) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            MessageType.entries.forEach { type ->
+                SegmentedButton(
+                    shape = RectangleShape,
+                    selected = vm.inputMessage.type == type,
+                    onClick = {
+                        vm.inputMessage = vm.inputMessage.copy(type = type)
+                    }
+                ) {
+                    Text(text = type.title)
+                }
+            }
+        }
+
+
+        vm.messages.forEach { message ->
+            var expanded by remember { mutableStateOf(false) }
+            Box(
+                modifier = Modifier.clickable {
+                    expanded = true
+                }
+            ) {
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    Text(text = "删除消息", modifier = Modifier.clickable {
+                        vm.messages.remove(message)
+                    })
+                }
+
+                MessageCell(message = message)
+            }
+        }
+    }
+}
+
+@Composable
+private fun Avatar2(vm: WechatDemoViewModel = viewModel()) {
+    val mediaPickerLauncher2 =
+        rememberLauncherForActivityResult(contract = MatisseContract()) { result: List<MediaResource>? ->
+            vm.avatar2 = result?.firstOrNull()
+        }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable {
+            mediaPickerLauncher2.launch(matisse)
+        }
+    ) {
+        AsyncImage(
+            model = vm.avatar2?.uri,
+            contentDescription = null,
+            modifier = Modifier
+                .clip(RoundedCornerShape(6.dp))
+                .background(Color.Gray)
+                .size(40.dp)
+        )
+        Spacer(Modifier.weight(1f))
+        Text(text = "对方头像")
+    }
+}
+
+@Composable
+private fun Avatar1(vm: WechatDemoViewModel = viewModel()) {
+    val mediaPickerLauncher1 =
+        rememberLauncherForActivityResult(contract = MatisseContract()) { result: List<MediaResource>? ->
+            vm.avatar1 = result?.firstOrNull()
+        }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable {
+            mediaPickerLauncher1.launch(matisse)
+        }
+    ) {
+        Text(text = "我的头像")
+        Spacer(Modifier.weight(1f))
+        AsyncImage(
+            model = vm.avatar1?.uri,
+            contentDescription = null,
+            modifier = Modifier
+                .clip(RoundedCornerShape(6.dp))
+                .background(Color.Gray)
+                .size(40.dp)
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun MessageEditViewPreview() {
-    MessageEditView(
-        avatar1 = remember { mutableStateOf(null) },
-        avatar2 = remember { mutableStateOf(null) },
-        messages = remember { mutableStateListOf() }
-    )
+    MessageEditView()
 }

@@ -41,6 +41,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import github.leavesczy.matisse.MediaResource
 
@@ -64,9 +66,40 @@ data class Message(
     val type: MessageType = MessageType.text,
 )
 
+class WechatDemoViewModel: ViewModel() {
+    var avatar1 by  mutableStateOf<MediaResource?>(null)
+    var avatar2 by mutableStateOf<MediaResource?>(null)
+    val messages = mutableStateListOf<Message>()
+
+    var inputMessage by mutableStateOf(Message(text = ""))
+    fun addMessage() {
+        if (inputMessage.text.isEmpty()) {
+            return
+        }
+
+        if (inputMessage.type == MessageType.trans) {
+            val isMine = inputMessage.isMine
+            messages += inputMessage.copy(
+                text = "已被接收",
+                amount = inputMessage.text
+            )
+            messages += inputMessage.copy(
+                text = "已接收",
+                amount = inputMessage.text,
+                isMine = !isMine
+            )
+        } else {
+            messages += inputMessage.copy()
+        }
+        inputMessage = inputMessage.copy(text = "")
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WechatDemo() {
+fun WechatDemo(
+    vm: WechatDemoViewModel = viewModel()
+) {
     // 什么是程序？
     // 程序就是用来处理数据的，数据可以是数字，也可以是文本，也可以是图片，还可以是音频，视频等等
     // 程序就是数据结构与算法
@@ -86,16 +119,6 @@ fun WechatDemo() {
     // 是一种数据类型
     // 用来表示 “有限且固定” 的选集合
 
-    val avatar1 = remember {
-        mutableStateOf<MediaResource?>(null)
-    }
-    val avatar2 = remember {
-        mutableStateOf<MediaResource?>(null)
-    }
-    val messages = remember {
-        mutableStateListOf<Message>()
-    }
-
     var showSheet by remember { mutableStateOf(false) }
 
     if (showSheet) {
@@ -104,11 +127,7 @@ fun WechatDemo() {
             onDismissRequest = { showSheet = false },
             sheetState = bottomSheetState
         ) {
-            MessageEditView(
-                avatar1 = avatar1,
-                avatar2 = avatar2,
-                messages = messages,
-            )
+            MessageEditView()
         }
     }
 
@@ -134,10 +153,8 @@ fun WechatDemo() {
                 .padding(padding)
                 .padding(12.dp)
         ) {
-            messages.forEach { message ->
+            vm.messages.forEach { message ->
                 MessageCell(
-                    avatar1 = avatar1,
-                    avatar2 = avatar2,
                     message = message
                 )
             }
@@ -147,11 +164,12 @@ fun WechatDemo() {
     }
 }
 
+// 积木
 @Composable
 fun MessageCell(
-    avatar1: MutableState<MediaResource?>,
-    avatar2: MutableState<MediaResource?>,
-    message: Message
+    // 图纸
+    message: Message,
+    vm: WechatDemoViewModel = viewModel()
 ) {
     when (message.type) {
         MessageType.time -> Text(
@@ -171,7 +189,7 @@ fun MessageCell(
                     Spacer(Modifier.weight(1f))
                 } else {
                     AsyncImage(
-                        model = avatar2.value?.uri,
+                        model = vm.avatar2?.uri,
                         contentDescription = null,
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
@@ -190,7 +208,7 @@ fun MessageCell(
                     Spacer(Modifier.weight(1f))
                 } else {
                     AsyncImage(
-                        model = avatar1.value?.uri,
+                        model = vm.avatar1?.uri,
                         contentDescription = null,
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))

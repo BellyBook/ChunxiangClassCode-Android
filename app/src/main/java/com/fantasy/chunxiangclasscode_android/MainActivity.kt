@@ -42,55 +42,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun MainView() {
-        // 0: 代表主页
-        // 1: 代表支付宝
-        // 2: 代表微信
-        var pageIndex by remember {
-            mutableIntStateOf(0)
-        }
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.background(Color.White).fillMaxSize()
-        ) {
-            when (pageIndex) {
-                0 -> Column(
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                ) {
-                    Text(text = "页面一览")
-                    Button(onClick = {
-                        pageIndex = 1
-                    }) {
-                        Text(text = "支付宝")
-                    }
-
-                    Button(onClick = {
-                        pageIndex = 2
-                    }) {
-                        Text(text = "微信")
-                    }
-
-                    Button(onClick = {
-                        pageIndex = 3
-                    }) {
-                        Text(text = "系统 ui")
-                    }
-                }
-                1 -> AlipayDemo(onDismiss = { pageIndex = 0 })
-                2 -> WechatDemo()
-                3 -> SystemUI()
-            }
-
-        }
-    }
 
 
-    @Preview
-    @Composable
-    fun MainViewPreview() {
-        MainView()
-    }
 
 
 
