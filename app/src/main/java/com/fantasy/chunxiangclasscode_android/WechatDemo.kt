@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import coil3.compose.AsyncImage
 import github.leavesczy.matisse.MediaResource
 
@@ -95,74 +97,77 @@ class WechatDemoViewModel: ViewModel() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun WechatDemo(
-    vm: WechatDemoViewModel = viewModel()
-) {
-    // 什么是程序？
-    // 程序就是用来处理数据的，数据可以是数字，也可以是文本，也可以是图片，还可以是音频，视频等等
-    // 程序就是数据结构与算法
-    // 在 Kotlin 中也叫 class 类
-    // 什么是类？
-    // 为什么有了 class 还要搞出 data class
-    // 1. 减少了样板代码。
-    // 2. 保证了数据的一致性
+class WechatDemo: Screen {
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun Content(){
+        val     vm: WechatDemoViewModel = viewModel()
 
-    // data class 不是要取代普通的 class, 而是作为一个专门用于数据处理的补充工具，在特定场景下能大大提高开发效率和代码质量。
-    // 使用建议：
-    // 1. 当需要一个数据容器时，使用 data class
-    // 2. 当需要处理业务逻辑时，使用普通的 class
+        // 什么是程序？
+        // 程序就是用来处理数据的，数据可以是数字，也可以是文本，也可以是图片，还可以是音频，视频等等
+        // 程序就是数据结构与算法
+        // 在 Kotlin 中也叫 class 类
+        // 什么是类？
+        // 为什么有了 class 还要搞出 data class
+        // 1. 减少了样板代码。
+        // 2. 保证了数据的一致性
 
-    // 什么是枚举？
-    // 枚举是一种特殊的类，它用于表示一组固定的常量值。
-    // 是一种数据类型
-    // 用来表示 “有限且固定” 的选集合
+        // data class 不是要取代普通的 class, 而是作为一个专门用于数据处理的补充工具，在特定场景下能大大提高开发效率和代码质量。
+        // 使用建议：
+        // 1. 当需要一个数据容器时，使用 data class
+        // 2. 当需要处理业务逻辑时，使用普通的 class
 
-    var showSheet by remember { mutableStateOf(false) }
+        // 什么是枚举？
+        // 枚举是一种特殊的类，它用于表示一组固定的常量值。
+        // 是一种数据类型
+        // 用来表示 “有限且固定” 的选集合
 
-    if (showSheet) {
-        val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ModalBottomSheet(
-            onDismissRequest = { showSheet = false },
-            sheetState = bottomSheetState
-        ) {
-            MessageEditView()
-        }
-    }
+        var showSheet by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            Navbar(
-                onDismiss = {},
-                onClickRight = {
-                    showSheet = true
-                })
-        },
-        bottomBar = {
-            androidx.compose.foundation.Image(
-                painter = painterResource(id = R.drawable.bottom_bar),
-                contentDescription = null,
-            )
-        },
-        containerColor = Color(0xffEDEDED)
-    ) { padding ->
-        Column(
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier
-                .padding(padding)
-                .padding(12.dp)
-        ) {
-            vm.messages.forEach { message ->
-                MessageCell(
-                    message = message
-                )
+        if (showSheet) {
+            val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            ModalBottomSheet(
+                onDismissRequest = { showSheet = false },
+                sheetState = bottomSheetState
+            ) {
+                MessageEditView()
             }
+        }
+
+        Scaffold(
+            topBar = {
+                Navbar(
+                    onClickRight = {
+                        showSheet = true
+                    })
+            },
+            bottomBar = {
+                androidx.compose.foundation.Image(
+                    painter = painterResource(id = R.drawable.bottom_bar),
+                    contentDescription = null,
+                )
+            },
+            containerColor = Color(0xffEDEDED)
+        ) { padding ->
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(12.dp)
+            ) {
+                vm.messages.forEach { message ->
+                    MessageCell(
+                        message = message
+                    )
+                }
 
 
+            }
         }
     }
+
 }
+
 
 // 积木
 @Composable
@@ -309,9 +314,10 @@ fun TextMessageContent(message: Message) {
 
 @Composable
 private fun Navbar(
-    onDismiss: () -> Unit,
     onClickRight: () -> Unit = {},
 ) {
+    val navigator = LocalNavigator.current
+
     Box(
         modifier = Modifier
             .statusBarsPadding()
@@ -328,7 +334,7 @@ private fun Navbar(
                 contentDescription = null,
                 tint = Color(color = 0xFF333333),
                 modifier = Modifier
-                    .clickable { onDismiss() }
+                    .clickable { navigator?.pop() }
                     .offset(x = (-12).dp)
                     .rotate(90f)
                     .size(44.dp)
@@ -361,5 +367,5 @@ private fun Navbar(
 @Preview(heightDp = 1200)
 @Composable
 fun WechatDemoPreview() {
-    WechatDemo()
+    WechatDemo().Content()
 }

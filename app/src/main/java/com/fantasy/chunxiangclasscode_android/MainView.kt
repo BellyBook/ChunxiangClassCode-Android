@@ -29,33 +29,54 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 
 enum class TabBarType {
-    支付宝, 微信, 系统ui,
+    模拟器, 系统ui,
     ;
 }
 
 class MainViewModel : ViewModel() {
-    var tabBarType by mutableStateOf(TabBarType.支付宝)
+    var tabBarType by mutableStateOf(TabBarType.模拟器)
 }
 
-@Composable
-fun MainView(
-    vm: MainViewModel = viewModel()
-) {
-    Scaffold(
-        bottomBar = {
-            TabBar()
-        }
-    ) {
-        Box(Modifier.padding(it)) {
-            when (vm.tabBarType) {
-                TabBarType.支付宝 -> AlipayDemo(onDismiss = { })
-                TabBarType.微信 -> WechatDemo()
-                TabBarType.系统ui -> SystemUI()
+class MainView: Screen {
+    @Composable
+    override fun Content() {
+        val vm: MainViewModel = viewModel()
+
+        Scaffold(
+            bottomBar = {
+                TabBar()
+            }
+        ) {
+            val navigator = LocalNavigator.current
+            Box(Modifier.padding(it)) {
+                when (vm.tabBarType) {
+                    TabBarType.模拟器 -> Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Button(onClick = {
+                            navigator?.push(AlipayDemo())
+                        }) {
+                            Text("Alipay Demo")
+                        }
+
+                        Button(onClick = {
+                            navigator?.push(WechatDemo())
+                        }) {
+                            Text("WeChat Demo")
+                        }
+                    }
+                    TabBarType.系统ui -> SystemUI()
+                }
             }
         }
     }
+
 }
 
 @Composable
@@ -99,5 +120,5 @@ fun TabBar(
 @Preview
 @Composable
 fun MainViewPreview() {
-    MainView()
+    MainView().Content()
 }

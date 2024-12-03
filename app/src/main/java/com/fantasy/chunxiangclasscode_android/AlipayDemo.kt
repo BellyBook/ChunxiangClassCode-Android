@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,57 +48,62 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun AlipayDemo(
-    onDismiss: () -> Unit,
-): Unit {
-    var price by remember {
-        mutableStateOf("-1,000")
-    }
-    var name by remember {
-        mutableStateOf("纯想老师")
-    }
 
-    var showSheet by remember { mutableStateOf(false) }
+class AlipayDemo: Screen {
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun Content() {
+        var price by remember {
+            mutableStateOf("-1,000")
+        }
+        var name by remember {
+            mutableStateOf("纯想老师")
+        }
 
-    if (showSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showSheet = false },
+        var showSheet by remember { mutableStateOf(false) }
+
+        if (showSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showSheet = false },
+            ) {
+                EditSheetContent(
+                    name = name,
+                    price = price,
+                    onNameChange = { name = it },
+                    onPriceChange = { price = it }
+                )
+                Text("Sheet Content")
+            }
+        }
+
+
+        Column(
+            modifier = Modifier
+                .background(Color(0xFFF5F5F5))
+                .fillMaxSize()
         ) {
-            EditSheetContent(
+            Navbar() {
+                showSheet = true
+            }
+
+            // 交易明细
+            Card1(
                 name = name,
                 price = price,
-                onNameChange = { name = it },
-                onPriceChange = { price = it }
             )
-            Text("Sheet Content")
+            // 账单管理
+            Card2()
         }
     }
 
-
-    Column(
-        modifier = Modifier
-            .background(Color(0xFFF5F5F5))
-            .fillMaxSize()
-    ) {
-        Navbar(onDismiss = onDismiss) {
-            showSheet = true
-        }
-
-        // 交易明细
-        Card1(
-            name = name,
-            price = price,
-        )
-        // 账单管理
-        Card2()
-    }
 }
+
 
 @Preview
 @Composable
@@ -138,13 +144,13 @@ fun EditSheetContent(
 
 @Composable
 private fun Navbar(
-    onDismiss: () -> Unit,
     onClickRight: () -> Unit,
 ) {
+    val navigator = LocalNavigator.current
     Box(
         modifier = Modifier
-            .padding(vertical = 14.dp)
-            .padding(top = 50.dp)
+            .statusBarsPadding()
+            .height(48.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -157,7 +163,7 @@ private fun Navbar(
                 contentDescription = null,
                 tint = Color(color = 0xFF333333),
                 modifier = Modifier
-                    .clickable { onDismiss() }
+                    .clickable { navigator?.pop() }
                     .offset(x = (-12).dp)
                     .rotate(90f)
                     .size(44.dp)
@@ -486,5 +492,5 @@ fun formatTimestamp(selectedDateMillis: Long): String {
 @Preview(showBackground = true, heightDp = 1200)
 @Composable
 fun GreetingPreview() {
-    AlipayDemo(onDismiss = {})
+    AlipayDemo().Content()
 }

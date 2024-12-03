@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.SlideTransition
 
 class MainActivity : ComponentActivity() {
     fun sayHello(name: String?, age: Int = 30) {
@@ -37,8 +39,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // ComposeUI 中的页面导航
+        // 1. androidx 自带的 Navigator 组件
+        // 2. voyager
         setContent {
-            MainView()
+            Navigator(MainView()) { navigator ->
+                SlideTransition(navigator)
+            }
         }
     }
 
