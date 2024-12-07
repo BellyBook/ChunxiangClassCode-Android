@@ -4,16 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -21,8 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
+import com.fantasy.chunxiangclasscode_android.view.main.MainView
+import com.fantasy.chunxiangclasscode_android.viewmodel.ToastManager
+import com.fantasy.chunxiangclasscode_android.viewmodel.toastManager
 
 class MainActivity : ComponentActivity() {
     fun sayHello(name: String?, age: Int = 30) {
@@ -43,39 +53,52 @@ class MainActivity : ComponentActivity() {
         // 1. androidx 自带的 Navigator 组件
         // 2. voyager
         setContent {
-            Navigator(MainView()) { navigator ->
-                SlideTransition(navigator)
-            }
+            Content()
         }
     }
 
+    @Composable
+    fun Content() {
+        Navigator(MainView()) { navigator ->
+            SlideTransition(navigator)
+        }
 
 
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .systemBarsPadding()
+                    .padding(bottom = 65.dp),
+            ) {
+                AnimatedVisibility(
+                    visible = toastManager.toastMessage.isNullOrEmpty().not(),
+                    enter = fadeIn() + slideInVertically { it },
+                    exit = fadeOut()+ slideOutVertically { it }
+                ) {
+                    var message by remember {
+                        mutableStateOf("")
+                    }
+                    LaunchedEffect(Unit) {
+                        if (toastManager.toastMessage.isNullOrEmpty().not()) {
+                            message = toastManager.toastMessage!!
+                        }
+                    }
+                    Text(
+                        text = message, modifier = Modifier
+                            .background(Color.Gray.copy(0.2f), RoundedCornerShape(10.dp))
+                            .padding(20.dp, 8.dp)
+                    )
+                }
+            }
 
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Preview
+    @Composable
+    fun preivew() {
+        Content()
+    }
 
 
     fun test() {

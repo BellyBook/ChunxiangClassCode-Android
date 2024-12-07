@@ -1,6 +1,5 @@
-package com.fantasy.chunxiangclasscode_android
+package com.fantasy.chunxiangclasscode_android.view.main
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,31 +14,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.fantasy.chunxiangclasscode_android.view.AlipayDemo
+import com.fantasy.chunxiangclasscode_android.view.SystemUI
+import com.fantasy.chunxiangclasscode_android.view.wechat.WechatDemo
+import com.fantasy.chunxiangclasscode_android.viewmodel.ToastManager
+import com.fantasy.chunxiangclasscode_android.viewmodel.toastManager
 
-enum class TabBarType {
-    模拟器, 系统ui,
-    ;
-}
-
-class MainViewModel : ViewModel() {
-    var tabBarType by mutableStateOf(TabBarType.模拟器)
-}
 
 class MainView: Screen {
     @Composable
@@ -69,6 +58,12 @@ class MainView: Screen {
                             navigator?.push(WechatDemo())
                         }) {
                             Text("WeChat Demo")
+                        }
+
+                        Button(onClick = {
+                            toastManager.showToast( "hello world")
+                        }) {
+                            Text("show toast")
                         }
                     }
                     TabBarType.系统ui -> SystemUI()

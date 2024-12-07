@@ -1,4 +1,4 @@
-package com.fantasy.chunxiangclasscode_android
+package com.fantasy.chunxiangclasscode_android.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.fantasy.chunxiangclasscode_android.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

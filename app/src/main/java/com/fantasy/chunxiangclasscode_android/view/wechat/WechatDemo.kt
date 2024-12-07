@@ -1,4 +1,4 @@
-package com.fantasy.chunxiangclasscode_android
+package com.fantasy.chunxiangclasscode_android.view.wechat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,9 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,66 +35,23 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import coil3.compose.AsyncImage
-import github.leavesczy.matisse.MediaResource
+import com.fantasy.chunxiangclasscode_android.R
+import com.fantasy.chunxiangclasscode_android.model.Message
+import com.fantasy.chunxiangclasscode_android.model.MessageType
+import com.fantasy.chunxiangclasscode_android.view.MessageEditView
 
-enum class MessageType {
-    text, trans, time
-    ;
 
-    val title
-        get() = when (this) {
-            text -> "文本消息"
-            trans -> "转账消息"
-            time -> "时间消息"
-        }
-}
-
-// 类就是一个模版，描述了某类事物应用具有的特征(属性)和行为(方法)。
-data class Message(
-    val text: String,
-    val isMine: Boolean = false,
-    val amount: String = "",
-    val type: MessageType = MessageType.text,
-)
-
-class WechatDemoViewModel: ViewModel() {
-    var avatar1 by  mutableStateOf<MediaResource?>(null)
-    var avatar2 by mutableStateOf<MediaResource?>(null)
-    val messages = mutableStateListOf<Message>()
-
-    var inputMessage by mutableStateOf(Message(text = ""))
-    fun addMessage() {
-        if (inputMessage.text.isEmpty()) {
-            return
-        }
-
-        if (inputMessage.type == MessageType.trans) {
-            val isMine = inputMessage.isMine
-            messages += inputMessage.copy(
-                text = "已被接收",
-                amount = inputMessage.text
-            )
-            messages += inputMessage.copy(
-                text = "已接收",
-                amount = inputMessage.text,
-                isMine = !isMine
-            )
-        } else {
-            messages += inputMessage.copy()
-        }
-        inputMessage = inputMessage.copy(text = "")
-    }
-}
-
+// MVVM
+// Model  - Message
+// View   - WechatDemo.Content()
+// ViewModel - WechatDemoViewModel
 class WechatDemo: Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable

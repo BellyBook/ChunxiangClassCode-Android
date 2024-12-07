@@ -1,4 +1,4 @@
-package com.fantasy.chunxiangclasscode_android
+package com.fantasy.chunxiangclasscode_android.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
