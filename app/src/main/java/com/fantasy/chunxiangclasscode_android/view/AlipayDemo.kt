@@ -56,7 +56,7 @@ import java.util.Date
 import java.util.Locale
 
 
-class AlipayDemo: Screen {
+class AlipayDemo : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
@@ -306,9 +306,8 @@ private fun RowScope.BlueRow(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.weight(1f)
     ) {
-        androidx.compose.foundation.Image(
-            painter = painterResource(id = icon),
-            contentDescription = null,
+        Image(
+            id = icon,
             modifier = Modifier.size(24.dp)
         )
         Text(
@@ -445,9 +444,11 @@ fun Card1(
             AnimatedVisibility(
                 visible = isShowMore
             ) {
-                Box(modifier = Modifier
-                    .background(Color.Red, CircleShape)
-                    .size(100.dp))
+                Box(
+                    modifier = Modifier
+                        .background(Color.Red, CircleShape)
+                        .size(100.dp)
+                )
             }
 
             Row(
@@ -457,7 +458,7 @@ fun Card1(
                 }
             ) {
                 Text(
-                    text = if (isShowMore)  "收起" else  "更多",
+                    text = if (isShowMore) "收起" else "更多",
                     fontSize = 16.sp,
                     color = Color(color = 0xFF999999)
                 )
@@ -465,22 +466,23 @@ fun Card1(
                     painter = painterResource(id = R.drawable.arrow_down),
                     contentDescription = null,
                     tint = Color(color = 0xFF999999).copy(alpha = 0.5f),
-                    modifier = Modifier.size(20.dp).rotate(if (isShowMore) 180f else 0f)
+                    modifier = Modifier
+                        .size(20.dp)
+                        .rotate(if (isShowMore) 180f else 0f)
                 )
-
 
 
             }
 
         }
 
-        androidx.compose.foundation.Image(
-            painter = painterResource(id = R.drawable.shop),
-            contentDescription = null,
+        Image(
+            id = R.drawable.shop,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .size(44.dp)
         )
+
     }
 
 }

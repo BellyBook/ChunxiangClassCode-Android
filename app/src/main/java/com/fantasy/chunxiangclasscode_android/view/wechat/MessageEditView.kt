@@ -1,4 +1,4 @@
-package com.fantasy.chunxiangclasscode_android.view
+package com.fantasy.chunxiangclasscode_android.view.wechat
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.SegmentedButton
@@ -36,9 +36,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.fantasy.chunxiangclasscode_android.design.avatarStyle
 import com.fantasy.chunxiangclasscode_android.model.MessageType
-import com.fantasy.chunxiangclasscode_android.view.wechat.MessageCell
-import com.fantasy.chunxiangclasscode_android.view.wechat.WechatDemoViewModel
 import github.leavesczy.matisse.ImageEngine
 import github.leavesczy.matisse.Matisse
 import github.leavesczy.matisse.MatisseContract
@@ -210,10 +209,7 @@ private fun Avatar2(vm: WechatDemoViewModel = viewModel()) {
         AsyncImage(
             model = vm.avatar2?.uri,
             contentDescription = null,
-            modifier = Modifier
-                .clip(RoundedCornerShape(6.dp))
-                .background(Color.Gray)
-                .size(40.dp)
+            modifier = Modifier.avatarStyle()
         )
         Spacer(Modifier.weight(1f))
         Text(text = "对方头像")
@@ -237,10 +233,7 @@ private fun Avatar1(vm: WechatDemoViewModel = viewModel()) {
         AsyncImage(
             model = vm.avatar1?.uri,
             contentDescription = null,
-            modifier = Modifier
-                .clip(RoundedCornerShape(6.dp))
-                .background(Color.Gray)
-                .size(40.dp)
+            modifier = Modifier.avatarStyle()
         )
     }
 }

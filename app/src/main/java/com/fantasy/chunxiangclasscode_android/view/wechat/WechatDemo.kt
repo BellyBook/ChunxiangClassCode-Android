@@ -1,5 +1,6 @@
 package com.fantasy.chunxiangclasscode_android.view.wechat
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
+import com.fantasy.chunxiangclasscode_android.design.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -43,20 +45,20 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import coil3.compose.AsyncImage
 import com.fantasy.chunxiangclasscode_android.R
+import com.fantasy.chunxiangclasscode_android.design.avatarStyle
 import com.fantasy.chunxiangclasscode_android.model.Message
 import com.fantasy.chunxiangclasscode_android.model.MessageType
-import com.fantasy.chunxiangclasscode_android.view.MessageEditView
 
 
 // MVVM
 // Model  - Message
 // View   - WechatDemo.Content()
 // ViewModel - WechatDemoViewModel
-class WechatDemo: Screen {
+class WechatDemo : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Content(){
-        val     vm: WechatDemoViewModel = viewModel()
+    override fun Content() {
+        val vm: WechatDemoViewModel = viewModel()
 
         // 什么是程序？
         // 程序就是用来处理数据的，数据可以是数字，也可以是文本，也可以是图片，还可以是音频，视频等等
@@ -151,10 +153,7 @@ fun MessageCell(
                     AsyncImage(
                         model = vm.avatar2?.uri,
                         contentDescription = null,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color.Gray)
-                            .size(40.dp)
+                        modifier = Modifier.avatarStyle()
                     )
                 }
                 // 内容
@@ -170,10 +169,7 @@ fun MessageCell(
                     AsyncImage(
                         model = vm.avatar1?.uri,
                         contentDescription = null,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color.Gray)
-                            .size(40.dp)
+                        modifier = Modifier.avatarStyle()
                     )
                 }
             }
@@ -202,10 +198,13 @@ fun TransMessageContent(message: Message) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.check),
-                    contentDescription = null,
+                    id = R.drawable.check,
                     modifier = Modifier.size(38.dp),
                     tint = Color.White
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.message),
+                    contentDescription = null,
                 )
                 Column(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -283,11 +282,8 @@ private fun Navbar(
             modifier = Modifier
                 .padding(horizontal = 14.dp)
         ) {
-
             Icon(
-                painter = painterResource(id = R.drawable.arrow_down),
-                contentDescription = null,
-                tint = Color(color = 0xFF333333),
+                id = R.drawable.arrow_down,
                 modifier = Modifier
                     .clickable { navigator?.pop() }
                     .offset(x = (-12).dp)
@@ -296,8 +292,7 @@ private fun Navbar(
             )
             Spacer(Modifier.weight(1f))
             Icon(
-                painter = painterResource(id = R.drawable.more),
-                contentDescription = null,
+                id = R.drawable.more,
                 modifier = Modifier.clickable { onClickRight() }
             )
         }
