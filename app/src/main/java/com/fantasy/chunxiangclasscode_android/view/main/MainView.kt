@@ -25,6 +25,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.fantasy.chunxiangclasscode_android.view.AlipayDemo
 import com.fantasy.chunxiangclasscode_android.view.SystemUI
+import com.fantasy.chunxiangclasscode_android.view.histroy.TodayOfHistoryView
 import com.fantasy.chunxiangclasscode_android.view.wechat.WechatDemo
 import com.fantasy.chunxiangclasscode_android.viewmodel.ToastManager
 import com.fantasy.chunxiangclasscode_android.viewmodel.toastManager
@@ -64,6 +65,12 @@ class MainView: Screen {
                             toastManager.showToast( "hello world")
                         }) {
                             Text("show toast")
+                        }
+
+                        Button(onClick = {
+                            navigator?.push(TodayOfHistoryView())
+                        }) {
+                            Text("历史上的今天")
                         }
                     }
                     TabBarType.系统ui -> SystemUI()

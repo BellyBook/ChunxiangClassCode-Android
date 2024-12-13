@@ -67,6 +67,8 @@ dependencies {
     implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
     // Transitions
     implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
-
-
+    // https://github.com/square/okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    // https://github.com/square/moshi
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
 }
