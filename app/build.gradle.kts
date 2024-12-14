@@ -55,7 +55,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // https://github.com/leavesCZY/Matisse/wiki/%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97
-    implementation("io.github.leavesczy:matisse:2.1.2")
+    implementation("io.github.leavesczy:matisse:2.1.3")
     // 导入网络图片库 https://github.com/coil-kt/coil/blob/main/README-zh.md
     implementation("io.coil-kt.coil3:coil-compose:3.0.4")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")

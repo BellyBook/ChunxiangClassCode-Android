@@ -48,6 +48,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("MainActivity onCreate")
+
         enableEdgeToEdge()
         // ComposeUI 中的页面导航
         // 1. androidx 自带的 Navigator 组件

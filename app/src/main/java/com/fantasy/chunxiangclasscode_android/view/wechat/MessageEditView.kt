@@ -38,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.fantasy.chunxiangclasscode_android.design.avatarStyle
 import com.fantasy.chunxiangclasscode_android.model.MessageType
+import github.leavesczy.matisse.Coil3ImageEngine
 import github.leavesczy.matisse.ImageEngine
 import github.leavesczy.matisse.Matisse
 import github.leavesczy.matisse.MatisseContract
@@ -45,37 +46,37 @@ import github.leavesczy.matisse.MediaResource
 import github.leavesczy.matisse.MediaType
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
-class CoilImageEngine : ImageEngine {
-
-    @Composable
-    override fun Thumbnail(mediaResource: MediaResource) {
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxSize(),
-            model = mediaResource.uri,
-            contentScale = ContentScale.Crop,
-            contentDescription = mediaResource.name
-        )
-    }
-
-    @Composable
-    override fun Image(mediaResource: MediaResource) {
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxSize(),
-            model = mediaResource.uri,
-            contentScale = ContentScale.Crop,
-            contentDescription = mediaResource.name
-        )
-    }
-
-}
-
+//@Parcelize
+//class CoilImageEngine : ImageEngine {
+//
+//    @Composable
+//    override fun Thumbnail(mediaResource: MediaResource) {
+//        AsyncImage(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            model = mediaResource.uri,
+//            contentScale = ContentScale.Crop,
+//            contentDescription = mediaResource.name
+//        )
+//    }
+//
+//    @Composable
+//    override fun Image(mediaResource: MediaResource) {
+//        AsyncImage(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            model = mediaResource.uri,
+//            contentScale = ContentScale.Crop,
+//            contentDescription = mediaResource.name
+//        )
+//    }
+//
+//}
+//
 
 val matisse = Matisse(
     maxSelectable = 1,
-    imageEngine = CoilImageEngine(),
+    imageEngine = Coil3ImageEngine(),
     mediaType = MediaType.ImageOnly,
     fastSelect = true
 )

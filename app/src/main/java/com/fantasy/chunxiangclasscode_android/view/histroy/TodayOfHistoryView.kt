@@ -259,17 +259,22 @@ class TodayOfHistoryView : Screen {
                 Text(text = vm.date.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")))
             }
 
-            Text(
-                text = "获取数据",
-                fontSize = 18.sp,
-                color = Color.Blue,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .clickable {
-                        vm.getData()
-                    }
-                    .align(Alignment.CenterEnd)
-            )
+            GetDataButton(
+                modifier = Modifier.align(Alignment.CenterEnd),
+            ) {
+                vm.getData()
+            }
+
+        }
+    }
+
+    @Composable
+    fun GetDataButton(
+        modifier: Modifier = Modifier,
+        onClick: () -> Unit
+    ) {
+        TextButton(onClick = onClick, modifier = modifier) {
+            Text(text = "获取数据")
         }
     }
 }
